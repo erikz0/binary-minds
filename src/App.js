@@ -115,7 +115,7 @@ const App = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
     try {
-      const response = await axios.post(`${config.serverUrl}/chat`, {
+      const response = await axios.post(`${config.serverUrl}/bm-chat`, {
         message: input,
         dataset: dataset,
         metadata: metadata

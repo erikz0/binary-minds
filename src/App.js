@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { TextField, Button, Container, Box, Typography, Grid, List, ListItem, ListItemText } from '@mui/material';
 import Papa from 'papaparse';
+import Login from './Login'; // Import the Login component
+import config from './config'; // Import the configuration
 
 const App = () => {
   const [input, setInput] = useState('');
@@ -9,6 +11,7 @@ const App = () => {
   const [graphCode, setGraphCode] = useState('');
   const [dataset, setDataset] = useState(null);
   const [metadata, setMetadata] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Add authentication state
   const graphContainerRef = useRef(null);
 
   // Function to normalize data
@@ -84,7 +87,7 @@ const App = () => {
   useEffect(() => {
     const loadCSV = async () => {
       try {
-        const fileResponse = await axios.get('http://localhost:5000/data/data.csv');
+        const fileResponse = await axios.get(`${config.serverUrl}/data/data.csv`);
         const text = fileResponse.data;
         Papa.parse(text, {
           header: true,
@@ -112,7 +115,7 @@ const App = () => {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
 
     try {
-      const response = await axios.post('http://localhost:5000/chat', {
+      const response = await axios.post(`${config.serverUrl}/chat`, {
         message: input,
         dataset: dataset,
         metadata: metadata
@@ -162,6 +165,14 @@ const App = () => {
       graphContainerRef.current.appendChild(script);
     }
   }, [graphCode, dataset]);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
     <div style={{ backgroundColor: '#CAE8FF', height: '100vh', padding: 0, margin: 0 }}>

@@ -1,59 +1,59 @@
 import React, { useState } from 'react';
+import { TextField, Button, Box, Typography } from '@mui/material';
 import axios from 'axios';
-import { TextField, Button, Container, Box, Typography } from '@mui/material';
-import config from './config'; // Import the configuration
+import { useNavigate } from 'react-router-dom';
+import config from './config';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, setIsAuthenticated }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(`${config.serverUrl}/check-bm-password`, { password });
-      if (response.data.success) {
+      const response = await axios.post(`${config.serverUrl}/check-bm-password`, {
+        password,
+      });
+
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem('token', token);
         onLogin();
+        setIsAuthenticated(true)
+        navigate('/datasets');
       } else {
-        setError('Incorrect password');
+        setError('Invalid login credentials');
       }
     } catch (error) {
-      setError('Error validating password');
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleLogin();
+      setError('Error logging in');
     }
   };
 
   return (
-    <Container>
-      <Box my={4} p={3} border={1} borderRadius={5} style={{ backgroundColor: '#ffffff', borderColor: '#000000' }}>
-        <Typography variant="h4" gutterBottom>
-          Enter Password
-        </Typography>
-        <TextField
-          fullWidth
-          variant="outlined"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyPress={handleKeyPress}
-          style={{ marginBottom: '16px', backgroundColor: '#ffffff', borderColor: '#000000' }}
-        />
-        {error && <Typography color="error">{error}</Typography>}
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleLogin}
-          fullWidth
-          style={{ backgroundColor: '#000000', color: '#ffffff' }}
-        >
-          Login
-        </Button>
-      </Box>
-    </Container>
+    <Box my={4} p={3} border={1} borderRadius={5} style={{ backgroundColor: '#ffffff', borderColor: '#000000' }}>
+      <Typography variant="h5" gutterBottom>
+        Login
+      </Typography>
+      <TextField
+        fullWidth
+        variant="outlined"
+        label="Password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{ marginBottom: '16px' }}
+      />
+      {error && <Typography color="error">{error}</Typography>}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleLogin}
+        fullWidth
+        style={{ backgroundColor: '#000000', color: '#ffffff' }}
+      >
+        Login
+      </Button>
+    </Box>
   );
 };
 

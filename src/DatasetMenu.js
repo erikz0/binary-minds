@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, CircularProgress, Alert } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
 import config from './config';
@@ -18,6 +18,8 @@ const useStyles = makeStyles({
 
 const DatasetMenu = ({ onSelectDataset }) => {
   const [datasets, setDatasets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -31,13 +33,18 @@ const DatasetMenu = ({ onSelectDataset }) => {
           },
         });
         setDatasets(response.data);
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching datasets:', error);
+        setError('Error fetching datasets');
+        setLoading(false);
       }
     };
 
     fetchDatasets();
   }, []);
+
+  if (loading) return <CircularProgress />;
+  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <Box my={4} p={3} border={1} borderRadius={5} style={{ backgroundColor: '#ffffff', borderColor: '#000000' }}>
@@ -50,12 +57,15 @@ const DatasetMenu = ({ onSelectDataset }) => {
             key={index}
             button
             onClick={() => {
-              onSelectDataset(dataset.name);
+              onSelectDataset(dataset);
               navigate('/chat');
             }}
             className={classes.listItem}
           >
-            <ListItemText primary={dataset.name} secondary={dataset.description} />
+            <ListItemText
+              primary={`${dataset.package}/${dataset.file}`}
+              secondary={dataset.description}
+            />
           </ListItem>
         ))}
       </List>
@@ -64,4 +74,3 @@ const DatasetMenu = ({ onSelectDataset }) => {
 };
 
 export default DatasetMenu;
- 

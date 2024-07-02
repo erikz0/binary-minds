@@ -1,0 +1,27 @@
+.download-tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .download-tooltip {
+    position: absolute;
+    top: 30px; /* Position above the element */
+    left: -180%;
+    transform: translateX(-50%);
+    background-color: #4e4d4d;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 100;
+    white-space: nowrap;
+    margin-bottom: 5px; /* Space between the tooltip and the element */
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  
+  .download-tooltip-container:hover .download-tooltip {
+    opacity: 1;
+  }
+  

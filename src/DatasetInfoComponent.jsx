@@ -13,58 +13,67 @@ const DatasetInfoComponent = ({ selectedDataset }) => {
     { id: 4, text: 'What are the limitations or challenges of this dataset?', response: null },
   ]);
 
-  useEffect(() => {
-    console.log('Selected dataset:', selectedDataset);
-    if (selectedDataset) {
-      fetchResponses(selectedDataset.packageName, selectedDataset.fileName);
-    }
-  }, [selectedDataset]);
+  // Question from Erik, why are you fetching these responses before clicking on the button?
 
-  const fetchResponses = async (datasetPackage, filename) => {
-    try {
-      const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
-      const responses = await Promise.all(
-        questions.map(async (question) => {
-          const payload = {
-            message: question.text,
-            package: datasetPackage,
-            filename,
-          };
-          console.log('Sending payload:', payload); // Log the payload
-          const response = await axios.post(
-            `${config.serverUrl}/bm-chat`,
-            payload,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          return response.data.response;
-        })
-      );
+  // useEffect(() => {
+  //   console.log('Selected dataset:', selectedDataset);
+  //   if (selectedDataset) {
+  //     fetchResponses(selectedDataset.package, selectedDataset.file);
+  //   }
+  // }, [selectedDataset]);
 
-      setQuestions((prevQuestions) =>
-        prevQuestions.map((question, index) => ({
-          ...question,
-          response: responses[index],
-        }))
-      );
-    } catch (error) {
-      console.error('Error fetching responses:', error);
-    }
-  };
+  // const fetchResponses = async (datasetPackage, filename) => {
+  //   try {
+  //     const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+  //     const responses = await Promise.all(
+  //       questions.map(async (question) => {
+  //         const payload = {
+  //           message: question.text,
+  //           package: datasetPackage,
+  //           filename: filename,
+  //         };
+  //         console.log('Sending payload:', payload); // Log the payload
+  //         const response = await axios.post(
+  //           `${config.serverUrl}/bm-chat`,
+  //           payload,
+  //           {
+  //             headers: {
+  //               'Content-Type': 'application/json',
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           }
+  //         );
+  //         return response.data.response;
+  //       })
+  //     );
+
+  //     setQuestions((prevQuestions) =>
+  //       prevQuestions.map((question, index) => ({
+  //         ...question,
+  //         response: responses[index],
+  //       }))
+  //     );
+  //   } catch (error) {
+  //     console.error('Error fetching responses:', error);
+  //   }
+  // };
 
   const handleQuestionClick = async (questionId) => {
     const question = questions.find((q) => q.id === questionId);
+
+    if (!selectedDataset) {
+      return <h1>You need to select a dataset before fetching a response</h1>
+    }
+
+    console.log('Selected dataset:', selectedDataset);
+
     if (question) {
       try {
         const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
         const payload = {
           message: question.text, // Use message instead of question
           package: selectedDataset.package, // Use 'package' key in the payload
-          filename: selectedDataset.filename,
+          filename: selectedDataset.file,
         };
         console.log('Sending payload:', payload); // Log the payload
         const response = await axios.post(

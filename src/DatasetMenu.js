@@ -21,6 +21,9 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        console.log("fetch dataset:" + response.data)
+
         setDatasets(response.data);
         setLoading(false);
       } catch (error) {
@@ -64,7 +67,7 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
              exit={{ x: -50, opacity: 0 }}
              transition={{ duration: 0.3, delay: index * 0.1 }}
            >
-            <CustomTooltip text={dataset.description}>
+            <CustomTooltip text={dataset.title}>
               <motion.button
                initial={{ x: -50, opacity: 0 }}
                animate={{ x: 0, opacity: 1 }}
@@ -85,7 +88,7 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: -50, opacity: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }} className="text-[8.5px]  font-medium text-gray-600 flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {dataset.description}
+                    {dataset.title}
                   </motion.div>
                 )}
               </motion.button>

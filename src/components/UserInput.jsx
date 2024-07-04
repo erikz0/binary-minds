@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import axios from 'axios';
-import { IoSend } from 'react-icons/io5';
-import config from '../config';
+import { IoSend } from 'react-icons/io5'; // Ensure the send icon is imported
+import axios from 'axios'; // Make sure axios is imported
+import config from '../config'; // Adjust this import based on your project structure
 
-const UserInput = ({ selectedDataset, addMessage, loading, setLoading }) => {
+const UserInput = ({ selectedDataset, addUserMessage, loading, setLoading }) => {
   const [inputValue, setInputValue] = useState('');
   const [isActive, setIsActive] = useState(false);
 
@@ -17,12 +16,11 @@ const UserInput = ({ selectedDataset, addMessage, loading, setLoading }) => {
     if (inputValue.trim() === '') return;
 
     // Add the user message to the chat
-    addMessage({ sender: 'user', text: inputValue });
+    addUserMessage({ sender: 'user', text: inputValue });
 
     setInputValue('');
     setIsActive(false);
     setLoading(true);
-
 
     try {
       const token = localStorage.getItem('token');
@@ -41,10 +39,17 @@ const UserInput = ({ selectedDataset, addMessage, loading, setLoading }) => {
       );
 
       // Add the response message to the chat
-      addMessage({ sender: 'bot', text: response.data.reply });
+      const { summary, graphCode, reply } = response.data;
+      console.log("Received summary:", summary, "Graph code:", graphCode, "Reply:", reply);
+
+      if (graphCode) {
+        addUserMessage({ sender: 'bot', text: summary }, graphCode);
+      } else {
+        addUserMessage({ sender: 'bot', text: reply });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
-      addMessage({ sender: 'bot', text: 'An error occurred. Please try again.' });
+      addUserMessage({ sender: 'bot', text: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
     }

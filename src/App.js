@@ -37,7 +37,7 @@ const App = () => {
   const [dataset, setDataset] = useState(null);
   const [summary, setSummary] = useState('');
   const [metadata, setMetadata] = useState([]);
-  const [datasetDescription, setDatasetDescription] = useState('');
+  const [datasetTitle, setDatasetTitle] = useState('');
   const [datasetPackage, setDatasetPackage] = useState('');
   const [datasetFile, setDatasetFile] = useState('');
   const { isAuthenticated, setIsAuthenticated } = useAuth();
@@ -83,7 +83,7 @@ const App = () => {
   
       setDataset(normalizedData);
       setMetadata(metadata);
-      setDatasetDescription(dataset.description);
+      setDatasetTitle(dataset.title);
       setDatasetPackage(dataset.package);  // Set the dataset package
       setDatasetFile(dataset.file)
     } catch (error) {
@@ -122,7 +122,7 @@ const App = () => {
           setMessages={setMessages}
           input={input}
           setInput={setInput}
-          datasetDescription={datasetDescription}
+          datasetTitle={datasetTitle}
           datasetPackage={datasetPackage}
           datasetFile={datasetFile} />
       ) : (

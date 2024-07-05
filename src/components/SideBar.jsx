@@ -55,7 +55,7 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
   };
 
   const handleDatasetSelect = (dataset) => {
-    toast.success(`Selected Dataset: ${dataset.description}`, {
+    toast.success(`Selected Dataset: ${dataset.title}`, {
       position: "top-right",
       autoClose: 3000,
       hideProgressBar: true,

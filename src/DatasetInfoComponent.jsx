@@ -5,7 +5,7 @@ import axios from 'axios';
 import config from './config';
 import { Oval } from 'react-loader-spinner';
 import { FaInfoCircle, FaColumns, FaChartBar, FaQuestionCircle } from 'react-icons/fa';
-import { IoPersonCircle } from 'react-icons/io5'; // Add IoPersonCircle for user icon
+import logo from './iced.png'; 
 import './DatasetInfoComponent.css'; // Import your CSS file
 
 const DatasetInfoComponent = ({ selectedDataset }) => {
@@ -110,29 +110,28 @@ const DatasetInfoComponent = ({ selectedDataset }) => {
           </div>
         </div>
       ) : activeQuestion ? (
-        <div className="flex w-full flex-col">
-          <div className="w-full flex justify-center items-center mb-4">
-            <img src="/binary-insight-logo--.png" alt="Logo" className="w-40" />
-          </div>
+        <div className="flex  flex-col dataset-chat h-[60vh] w-[100%] max-[768px]:w-[100%] mx-auto ">
+         
           <div className="bg-[#cfc9c9] p-4 rounded-xl rounded-br-none shadow-lg w-[250px] mx-4 my-4 ml-[300px] relative">
-            <IoPersonCircle className="absolute top-0 right-[-14px] text-3xl text-blue-500 transform -translate-x-2/4 -translate-y-2/4" />
+          <img src={logo} alt="ICED Logo" className="absolute bottom-[43px] right-[-14px] w-[25px] h-[25px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover" />
             <span className="text-gray-600">{activeQuestion.text}</span>
           </div>
-          <div className="bg-blue-200 p-4 rounded-2xl rounded-bl-none shadow-md w-full max-w-md mx-4 my-4">
-          <img src="/binary-insight-logo--.png" alt="Logo" className="w-[80px] h-[80px] object-cover absolute bottom-[265px] left-[430px]" />
+          <div className="bg-blue-200 p-4 rounded-2xl rounded-bl-none shadow-md w-full max-w-md mx-4 my-4 relative">
+          <img src="/binary-insight-logo--.png" alt="Logo" className="w-[80px] h-[80px] max-[860px]:w-[60px] max-[860px]:h-[60px] object-cover absolute bottom-[170px] left-[-30px]  " />
             <span>{activeQuestion.response}</span>
             {graphCode && <div ref={graphContainerRef}></div>}
           </div>
         </div>
       ) : (
         <>
-          <div className="w-full flex justify-center items-center mb-4">
-            <img src="/binary-insight-logo--.png" alt="Logo" className="w-[12rem] object-cover " />
+          <div className="w-full flex flex-col  justify-center items-center ">
+            <h3 className='font-semibold max-[460px]:text-sm max-[430px]:text-xs'>Please Select a Dataset from the Sidebar to get started</h3>
+            <img src="/binary-insight-logo--.png" alt="Logo" className="w-[11rem] object-cover " />
           </div>
           {initialQuestions.map((question) => (
             <div
               key={question.id}
-              className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-4 my-4 cursor-pointer hover:scale-105 transition duration-300"
+              className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-4 my-2 cursor-pointer hover:scale-105 transition duration-300"
               onClick={() => handleQuestionClick(question.id)}
             >
               <div className="flex items-start">

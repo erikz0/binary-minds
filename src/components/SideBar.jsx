@@ -73,9 +73,11 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
         variants={containerVariants}
         animate={containerControls}
         initial="open"
-        className="bg-[#f9f9f9] flex flex-col  p-5 sidebar shadow shadow-neutral-600 h-screen"
+        className={`bg-[#f9f9f9] flex flex-col  p-5 sidebar shadow shadow-neutral-600 h-screen ${isOpen ? '' : ''}`}
       >
-        <div className={`flex flex-row w-full place-items-center ${isOpen ? 'justify-between' : 'gap-4'}`}>
+
+
+        <div className={`flex flex-row w-full place-items-center ${isOpen ? 'justify-between' : 'gap-2'}`}>
           <img src={logo} alt="ICED Logo" style={{ width: '30px', height: '30px' }} />
 
           <button className="rounded-full flex" onClick={handleOpenClose}>
@@ -102,12 +104,12 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
           </button>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <h2 className={`text-[#4e4d4d] mt-12 font-semibold  ${isOpen ? 'text-2xl ml-3' : 'text-md text-center'}`}>
+        <div className="flex flex-col gap-3 ">
+          <h2 className={`text-[#4e4d4d] mt-12 font-semibold  ${isOpen ? 'text-2xl ' : 'text-md '}`}>
             DATASETS
           </h2>
 
-          <DatasetMenu onSelectDataset={handleDatasetSelect} isOpen={isOpen} />
+          <DatasetMenu onSelectDataset={handleDatasetSelect} isOpen={isOpen} className="dataset-data"  />
         </div>
       </motion.nav>
       <ToastContainer

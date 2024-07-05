@@ -31,12 +31,43 @@ code {
 
 .sidebar {
   z-index: 1000;
+ 
 }
 
 
+
+
+/* Add this CSS to ensure the correct styling */
 .header-data {
+  transition: width 0.3s ease-in-out;
   z-index: 200;
 }
+.header-data.w-full {
+  width: calc(100% - 2rem); /* Adjust to leave space for borders or padding */
+  max-width: 100%;
+}
+
+.header-data.w-300px {
+  width: 300px;
+  max-width: 300px;
+}
+
+
+.table-container {
+  overflow-x: auto; /* Make the table container horizontally scrollable */
+  white-space: nowrap; /* Prevent line breaks inside table cells */
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+  white-space: nowrap; /* Prevent line breaks inside table cells */
+}
+
 
 
 
@@ -141,7 +172,6 @@ code {
 }
 
 
-
 /* global styles */
 @media (min-width: 768px) {
   .main-content {
@@ -168,12 +198,23 @@ code {
   }
 
   .sidebar {
-    position: absolute;
+    position: absolute; 
     width: 100%;
     top: 0;
     left: 0;
     z-index: 1000;
-    height: 100vh;
+    height: 130vh;
    
   }
 }
+
+@media (max-width: 480px) {
+  .text-xs {
+    font-size: 0.75rem;
+  }
+  .max-480px\:text-\[7px\] {
+    font-size: 0.4375rem;
+  }
+}
+
+

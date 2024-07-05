@@ -2,10 +2,14 @@
 
 /* Style for the container div */
 .dataset-info-container {
-    max-height: 400px; /* Set a max height to enable scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
-    scrollbar-width: thin; /* Set the width of the scrollbar */
-    scrollbar-color: #1d4487 #f3f4f6; /* Set the color of the scrollbar */
+  max-height: 600px; /* Set a max height to enable scrolling */
+  
+    display: grid;
+    gap: 1rem; 
+  }
+
+  .dataset-chat {
+    width: 700px;
   }
   
   /* Track */
@@ -22,5 +26,21 @@
   /* Handle on hover */
   .dataset-info-container::-webkit-scrollbar-thumb:hover {
     background-color: #0e2a4a; /* Darker color when hovered */
+  }
+
+
+  @media (min-width: 768px) {
+    .dataset-info-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dataset-info-container {
+      grid-template-columns: 1fr;
+      overflow-y: auto; /* Enable vertical scrolling */
+      scrollbar-width: thin; /* Set the width of the scrollbar */
+      scrollbar-color: #1d4487 #f3f4f6;
+    }
   }
   

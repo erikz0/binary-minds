@@ -1,13 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500;600;700;800;900&family=Space+Grotesk:wght@300..700&display=swap');
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* h1 {
+  font-family: "Poppins", sans-serif;
+  color: purple;
+} */
+
+html {
+  scroll-behavior: smooth;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.sidebar {
+  z-index: 1000;
+ 
+}
+
+
+
+
+/* Add this CSS to ensure the correct styling */
+.header-data {
+  transition: width 0.3s ease-in-out;
+  z-index: 200;
+}
+.header-data.w-full {
+  width: calc(100% - 2rem); /* Adjust to leave space for borders or padding */
+  max-width: 100%;
+}
+
+.header-data.w-300px {
+  width: 300px;
+  max-width: 300px;
+}
+
+
+.table-container {
+  overflow-x: auto; /* Make the table container horizontally scrollable */
+  white-space: nowrap; /* Prevent line breaks inside table cells */
+}
+
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+  white-space: nowrap; /* Prevent line breaks inside table cells */
+}
+
+
+
+
+.chat-container {
+  /* Set a max height to enable scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  scrollbar-width: thin; /* Set the width of the scrollbar */
+  scrollbar-color: #1d4487 #f3f4f6; /* Set the color of the scrollbar */
+}
+
+/* Track */
+.chat-container::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
+}
+
+/* Handle */
+.chat-container::-webkit-scrollbar-thumb {
+  background-color: #1d4487; /* Color of the scrollbar handle */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Handle on hover */
+.chat-container::-webkit-scrollbar-thumb:hover {
+  background-color: #0e2a4a;
+  width: 5px; 
+}
+
+
+.message {
+  position: relative;
+}
+
+.message .absolute {
+  position: absolute;
+}
+
+
+/* Spinner styles */
+.spinner {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.double-bounce1, .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #1d4487;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+  animation-delay: -1.0s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+    background-color: gray; /* Change color to gray at midpoint */
+  }
+}
+
+
+
+.spinner-2 {
+  width: 40px;
+  height: 40px;
+}
+
+.double-bounce1-1, .double-bounce2-1 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #1d4487;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: bouncer 2.0s infinite ease-in-out;
+}
+
+.double-bounce2-1 {
+  animation-delay: -1.0s;
+}
+
+@keyframes bouncer {
+  0%, 100% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+    background-color: gray; /* Change color to gray at midpoint */
+  }
+}
+
+
+/* global styles */
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: var(--sidebar-width);
+    /* width: calc(100% - var(--sidebar-width)); */
+    width: 100%;
+  }
+
+  .sidebar {
+    position: relative;
+    height: 100vh;
+   
+  }
+
+  .input {
+    min-width: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .main-content {
+    width: 100%;
+    margin-left: 75px;
+  }
+
+  .sidebar {
+    position: absolute; 
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    height: 130vh;
+   
+  }
+}
+
+@media (max-width: 480px) {
+  .text-xs {
+    font-size: 0.75rem;
+  }
+  .max-480px\:text-\[7px\] {
+    font-size: 0.4375rem;
+  }
+}
+
+

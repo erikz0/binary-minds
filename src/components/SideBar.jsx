@@ -54,19 +54,6 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
     setIsOpen(!isOpen);
   };
 
-  const handleDatasetSelect = (dataset) => {
-    toast.success(`Selected Dataset: ${dataset.title}`, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      transition: Slide
-    });
-    onSelectDataset(dataset);
-  };
-
   return (
     <>
       <motion.nav
@@ -109,21 +96,9 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
             DATASETS
           </h2>
 
-          <DatasetMenu onSelectDataset={handleDatasetSelect} isOpen={isOpen} className="dataset-data"  />
+          <DatasetMenu onSelectDataset={onSelectDataset} isOpen={isOpen} className="dataset-data"  />
         </div>
       </motion.nav>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={true}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        style={{ zIndex: 99999 }} // Ensure the toast container is above other elements
-      />
     </>
   );
 };

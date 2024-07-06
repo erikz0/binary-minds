@@ -84,7 +84,6 @@ const Login = ({ onLogin, setIsAuthenticated }) => {
         localStorage.setItem('token', token);
         onLogin();
         setIsAuthenticated(true)
-        // navigate('/datasets');
         navigate('/chat');
       } else {
         setError('Invalid login credentials');

@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { IoSend } from 'react-icons/io5'; // Ensure the send icon is imported
-import axios from 'axios'; // Make sure axios is imported
-import config from '../config'; // Adjust this import based on your project structure
 
-const UserInput = ({ selectedDataset, addUserMessage, loading, setLoading }) => {
+const UserInput = ({ selectedDataset, handleSendMessage, loading, setLoading }) => {
   const [inputValue, setInputValue] = useState('');
   const [isActive, setIsActive] = useState(false);
 
@@ -12,52 +10,15 @@ const UserInput = ({ selectedDataset, addUserMessage, loading, setLoading }) => 
     setIsActive(event.target.value.length > 0);
   };
 
-  const handleSendMessage = async () => {
-    if (inputValue.trim() === '') return;
-
-    // Add the user message to the chat
-    addUserMessage({ sender: 'user', text: inputValue });
-
+  const onSendMessage = () => {
+    handleSendMessage(inputValue);
     setInputValue('');
     setIsActive(false);
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${config.serverUrl}/bm-chat`,
-        {
-          message: inputValue,
-          package: selectedDataset.package,
-          filename: selectedDataset.file,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Add the response message to the chat
-      const { summary, graphCode, reply } = response.data;
-      console.log("Received summary:", summary, "Graph code:", graphCode, "Reply:", reply);
-
-      if (graphCode) {
-        addUserMessage({ sender: 'bot', text: summary }, graphCode);
-      } else {
-        addUserMessage({ sender: 'bot', text: reply });
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      addUserMessage({ sender: 'bot', text: 'An error occurred. Please try again.' });
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      handleSendMessage();
+      onSendMessage();
     }
   };
 
@@ -74,7 +35,7 @@ const UserInput = ({ selectedDataset, addUserMessage, loading, setLoading }) => 
       />
       <button
         className={`rounded-full py-2 px-4 focus:outline-none ${isActive ? 'bg-[#1d4487]' : 'bg-[#8d9cb4]'}`}
-        onClick={handleSendMessage}
+        onClick={onSendMessage}
         disabled={loading || inputValue.trim() === ''}
       >
         <IoSend size={14} className={`text-center ${isActive ? 'text-white' : 'text-white'}`} />

@@ -93,7 +93,6 @@ const App = () => {
   
   const handleLogin = () => {
     setIsAuthenticated(true);
-    navigate('/datasets');
   };
 
   return (
@@ -102,14 +101,6 @@ const App = () => {
     <div>
     <><Routes>
       <Route path="/login" element={<Login onLogin={handleLogin} setIsAuthenticated={setIsAuthenticated} />} />
-      <Route path="/datasets" element={isAuthenticated ? (
-        <DatasetMenu onSelectDataset={(dataset) => {
-          fetchDataset(dataset);
-          navigate('/chat');
-        } } />
-      ) : (
-        <Navigate to="/login" />
-      )} />
       <Route path="/chat" element={isAuthenticated ? (
         <ChatPage
           dataset={dataset}

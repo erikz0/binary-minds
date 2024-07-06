@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 import { FaCode } from 'react-icons/fa';
 import { RiDownloadCloudFill } from 'react-icons/ri';
 import { IoCopy } from 'react-icons/io5';
 import config from '../config';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import Papa from 'papaparse'; // Import papaparse for CSV parsing
 import CopyTooltip from './CopyTooltip';
 import DownloadTooltip from './DownloadTooltip';
@@ -23,7 +22,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [showDatasetContainer, setShowDatasetContainer] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewNormalizedData, setViewNormalizedData] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState(''); // State to store PDF URL
+  const [markdownContent, setMarkdownContent] = useState(''); // State to store Markdown content
 
   const dropdownRef = useRef(null);
   const pageSize = 170; // Define pageSize for pagination
@@ -64,24 +63,14 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const csvData = normalizedDataResponse.data;
-
-      Papa.parse(csvData, {
-        header: true,
-        complete: (results) => {
-          setNormalizedData(results.data);
-          setLoadingNormalizedData(false);
-          setShowDatasetContainer(true);
-          setShowDropdown(false);
-          setViewNormalizedData(true);
-          setCurrentPage(1);
-        },
-        error: (error) => {
-          console.error('Error parsing CSV:', error);
-          setErrorNormalizedData('Error parsing CSV');
-          setLoadingNormalizedData(false);
-        }
-      });
+  
+      // No need to parse CSV since the response is already JSON
+      setNormalizedData(normalizedDataResponse.data);
+      setLoadingNormalizedData(false);
+      setShowDatasetContainer(true);
+      setShowDropdown(false);
+      setViewNormalizedData(true);
+      setCurrentPage(1);
     } catch (error) {
       console.error('Error loading normalized data:', error);
       setErrorNormalizedData('Error loading normalized data');
@@ -89,20 +78,17 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     }
   };
 
-  const fetchPdfDataInfo = async () => {
+  const fetchMarkdownDataInfo = async () => {
     try {
       const token = localStorage.getItem('token');
-      const pdfResponse = await axios.get(`${config.serverUrl}/data-info/${selectedDataset.package}`, {
+      const markdownResponse = await axios.get(`${config.serverUrl}/data-info/${selectedDataset.package}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        responseType: 'blob', // Important for handling binary data
       });
-      const pdfBlob = new Blob([pdfResponse.data], { type: 'application/pdf' });
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      setPdfUrl(pdfUrl);
+      setMarkdownContent(markdownResponse.data);
     } catch (error) {
-      console.error('Error fetching PDF data info:', error);
+      console.error('Error fetching Markdown data info:', error);
     }
   };
 
@@ -119,8 +105,8 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     fetchNormalizedData();
   };
 
-  const handlePdfSelect = () => {
-    fetchPdfDataInfo();
+  const handleMarkdownSelect = () => {
+    fetchMarkdownDataInfo();
   };
 
   const copyJSONToClipboard = () => {
@@ -132,26 +118,16 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     }, 3000); // Reset copy success message after 3 seconds
   };
 
-  const downloadPDF = () => {
-    if (!dataset) return;
+  const downloadMarkdown = () => {
+    if (!markdownContent) return;
 
-    const doc = new jsPDF();
-    const jsonContent = JSON.stringify(dataset, null, 2);
-
-    const lines = doc.splitTextToSize(jsonContent, 180);
-    const pageHeight = doc.internal.pageSize.height;
-    let cursorY = 10;
-
-    lines.forEach((line) => {
-      if (cursorY + 10 > pageHeight) {
-        doc.addPage();
-        cursorY = 10;
-      }
-      doc.text(line, 10, cursorY);
-      cursorY += 10;
-    });
-
-    doc.save('dataset.pdf');
+    const blob = new Blob([markdownContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data_info.md';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handlePageChange = (page) => {
@@ -195,9 +171,9 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
             </div>
             <div
               className="flex cursor-pointer mb-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition duration-300"
-              onClick={handlePdfSelect}
+              onClick={handleMarkdownSelect}
             >
-              <span className="text-sm white-space-nowrap mr-16 items-start text-gray-700">PDF Info</span>
+              <span className="text-sm white-space-nowrap mr-16 items-start text-gray-700">Data Info</span>
               <BsListColumnsReverse size={16} className="ml-2 text-red-500" />
             </div>
           </div>
@@ -216,8 +192,8 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
                   </CopyTooltip>
                   {copySuccess && <span className="text-green-500 text-sm">Copied!</span>}
                 </div>
-                <DownloadTooltip text="Download PDF">
-                  <button onClick={downloadPDF} className="focus:outline-none">
+                <DownloadTooltip text="Download Markdown">
+                  <button onClick={downloadMarkdown} className="focus:outline-none">
                     <RiDownloadCloudFill size={24} className="text-gray-500" />
                   </button>
                 </DownloadTooltip>
@@ -278,12 +254,18 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
           )}
         </div>
       )}
-      {pdfUrl && (
-        <iframe
-          src={pdfUrl}
-          className="w-full h-[90vh] border border-gray-300 absolute top-20 right-4 bg-white"
-          title="PDF Data Info"
-        ></iframe>
+      {markdownContent && (
+        <div className="w-full h-[70vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 overflow-auto z-50">
+          <div className="flex justify-between items-center mb-4">
+            <button onClick={() => setMarkdownContent('')} className="text-gray-500">X</button>
+            <button onClick={downloadMarkdown} className="text-gray-500">
+              <RiDownloadCloudFill size={24} />
+            </button>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-lg w-full h-full overflow-auto">
+            <ReactMarkdown>{markdownContent}</ReactMarkdown>
+          </div>
+        </div>
       )}
     </div>
   );

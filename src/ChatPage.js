@@ -1,21 +1,27 @@
+/* eslint-disable no-unused-vars */
+
 
 import SideBar from './components/SideBar';
 import Header from './components/Header';
 import React, { useState, useEffect, useRef } from 'react';
 import DatasetInfoComponent from './DatasetInfoComponent';
 import UserInput from './components/UserInput';
-import { IoPersonCircle } from 'react-icons/io5';
+import logo from './iced.png'; 
 import axios from 'axios';
 import config from './config';
-import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown for rendering markdown
+import ReactMarkdown from 'react-markdown';
+import { IoMdCloudDownload } from 'react-icons/io';
+import './Tooltip.css'; // Assuming you have a CSS file for tooltip styles
 
 const ChatPage = () => {
     const [selectedDataset, setSelectedDataset] = useState(null);
-    const [sidebarWidth, setSidebarWidth] = useState('16rem');
     const [datasetInfoMessages, setDatasetInfoMessages] = useState([]);
+    const [sidebarWidth, setSidebarWidth] = useState('16rem');
     const [userMessages, setUserMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [retrievedDataset, setRetrievedDataset] = useState(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [isTooltipVisible, setIsTooltipVisible] = useState(false);
     const messageEndRef = useRef(null);
 
     const handleSelectDataset = (dataset) => {
@@ -23,12 +29,10 @@ const ChatPage = () => {
     };
 
     const addDatasetInfoMessage = (message) => {
-        console.log("Adding dataset info message:", message);
         setDatasetInfoMessages((prevMessages) => [...prevMessages, message]);
     };
 
     const addUserMessage = (message, graphCode = null) => {
-        console.log("Adding user message:", message, "Graph code:", graphCode);
         setUserMessages((prevMessages) => [...prevMessages, { ...message, graphCode }]);
     };
 
@@ -39,23 +43,14 @@ const ChatPage = () => {
 
         userMessages.forEach((message, index) => {
             if (message.graphCode) {
-                console.log(`Rendering graph for message at index ${index} with graphCode`, message.graphCode);
                 const el = document.getElementById(`graph-container-${index}`);
                 renderGraph(el, message.graphCode, retrievedDataset, index);
             }
         });
-    }, [datasetInfoMessages, userMessages, retrievedDataset]);
+    }, [userMessages, retrievedDataset]);
 
     const renderGraph = (el, graphCode, dataset, index) => {
         if (!el || !graphCode) return;
-
-        console.log(`Rendering graph in element ${el.id} with dataset`, dataset);
-        console.log(`Dataset type: ${typeof dataset}, isArray: ${Array.isArray(dataset)}`);
-
-        if (!Array.isArray(dataset)) {
-            console.error("Dataset is not an array. Cannot render graph.");
-            return;
-        }
 
         el.innerHTML = `<canvas id="graph-canvas-${index}" style="width: 100%; height: 100%;"></canvas>`;
 
@@ -89,7 +84,6 @@ const ChatPage = () => {
                 } else {
                     setRetrievedDataset(parsedData);
                 }
-                console.log("Retrieved dataset:", parsedData);
             } catch (error) {
                 console.error('Error fetching dataset:', error);
             }
@@ -97,6 +91,32 @@ const ChatPage = () => {
 
         fetchData();
     }, [selectedDataset]);
+
+    const handleDownload = (index) => {
+        const canvas = document.getElementById(`graph-canvas-${index}`);
+
+        if (!canvas) {
+            console.error(`Canvas element with id 'graph-canvas-${index}' not found.`);
+            return;
+        }
+
+        const imageURL = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = imageURL;
+        a.download = 'graph.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    const handleTooltipOpen = (event) => {
+        setIsTooltipVisible(true);
+        setTooltipPosition({ x: event.clientX, y: event.clientY });
+    };
+
+    const handleTooltipClose = () => {
+        setIsTooltipVisible(false);
+    };
 
     return (
         <main className="w-full h-screen flex relative">
@@ -124,8 +144,25 @@ const ChatPage = () => {
                                         {message.graphCode && (
                                             <div id={`graph-container-${index}`} style={{ width: '100%', height: '400px' }}></div>
                                         )}
+                                        {message.graphCode && (
+                                            <div className="relative">
+                                                <button
+                                                    onMouseEnter={handleTooltipOpen}
+                                                    onMouseLeave={handleTooltipClose}
+                                                    onClick={() => handleDownload(index)}
+                                                    className="absolute top-1 right-1 z-50"
+                                                >
+                                                    <IoMdCloudDownload size={24} className='text-[#1d4487] relative hover:scale-110 transition duration-300' />
+                                                </button>
+                                                {/* {isTooltipVisible && (
+                                                    <div className="tooltip" style={{ left: tooltipPosition.x, top: tooltipPosition.y + 20 }}>
+                                                        Download Graph
+                                                    </div>
+                                                )} */}
+                                            </div>
+                                        )}
                                         {message.sender === 'user' ? (
-                                            <IoPersonCircle className="absolute top-[-1rem] right-[-7px] text-3xl text-blue-500" />
+                                            <img src={logo} alt="ICED Logo" className="absolute top-[-1.25rem] right-[-7px] rounded-full w-[25px] h-[25px] object-cover z-50" />
                                         ) : (
                                             <img src="/binary-insight-logo--.png" alt="Logo" className="w-[80px] h-[80px] object-cover absolute top-[-5.45rem] left-[-30px]" />
                                         )}

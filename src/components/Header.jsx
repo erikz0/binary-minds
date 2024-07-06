@@ -4,12 +4,11 @@ import { FaCode } from 'react-icons/fa';
 import { RiDownloadCloudFill } from 'react-icons/ri';
 import { IoCopy } from 'react-icons/io5';
 import config from '../config';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 import Papa from 'papaparse'; // Import papaparse for CSV parsing
 import CopyTooltip from './CopyTooltip';
 import DownloadTooltip from './DownloadTooltip';
 import { BsListColumnsReverse } from "react-icons/bs";
+import { jsPDF } from 'jspdf';
 
 const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -23,7 +22,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [showDatasetContainer, setShowDatasetContainer] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewNormalizedData, setViewNormalizedData] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState(''); // State to store PDF URL
+  const [pdfUrl, setPdfUrl] = useState('');
 
   const dropdownRef = useRef(null);
   const pageSize = 170; // Define pageSize for pagination
@@ -63,6 +62,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        responseType: 'text', // Ensure response type is text
       });
       const csvData = normalizedDataResponse.data;
 
@@ -89,23 +89,6 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     }
   };
 
-  const fetchPdfDataInfo = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const pdfResponse = await axios.get(`${config.serverUrl}/data-info/${selectedDataset.package}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob', // Important for handling binary data
-      });
-      const pdfBlob = new Blob([pdfResponse.data], { type: 'application/pdf' });
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      setPdfUrl(pdfUrl);
-    } catch (error) {
-      console.error('Error fetching PDF data info:', error);
-    }
-  };
-
   const handleDatasetSelect = (dataset) => {
     setSelectedDataset(dataset);
     setShowDropdown(false);
@@ -117,10 +100,6 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
 
   const handleNormalizedDataSelect = () => {
     fetchNormalizedData();
-  };
-
-  const handlePdfSelect = () => {
-    fetchPdfDataInfo();
   };
 
   const copyJSONToClipboard = () => {
@@ -178,7 +157,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
           }}
         />
         {showDropdown && (
-          <div ref={dropdownRef} className="absolute top-24 right-0 bg-white border border-gray-300 shadow-lg px-2 py-2 rounded-lg">
+          <div ref={dropdownRef} className="absolute top-24 right-0 bg-white border border-gray-300 shadow-lg px-2 py-2 rounded-lg z-50">
             <div
               className="flex cursor-pointer mb-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition duration-300"
               onClick={() => handleDatasetSelect(selectedDataset)}
@@ -193,97 +172,134 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
               <span className="text-sm white-space-nowrap mr-16 items-start text-gray-700">Normalized</span>
               <BsListColumnsReverse size={16} className="ml-2 text-green-500" />
             </div>
-            <div
-              className="flex cursor-pointer mb-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition duration-300"
-              onClick={handlePdfSelect}
-            >
-              <span className="text-sm white-space-nowrap mr-16 items-start text-gray-700">PDF Info</span>
-              <BsListColumnsReverse size={16} className="ml-2 text-red-500" />
-            </div>
           </div>
         )}
       </div>
       {showDatasetContainer && (
-        <div className={`p-4 overflow-auto h-[80vh] border border-gray-300 absolute top-20 right-4 bg-white header-data ${viewNormalizedData ? 'w-full' : 'w-[300px]'} max-w-full`}>
+         <div className={`p-4 overflow-auto h-[80vh] border border-gray-300 absolute top-20 right-4 bg-white header-data ${viewNormalizedData ? 'w-full' : 'w-[300px]'} max-w-full`}>
           <div className="flex justify-between mb-4">
-            {!viewNormalizedData ? (
-              <>
-                <div className="relative">
-                  <CopyTooltip text="Copy Data">
-                    <button onClick={copyJSONToClipboard} className="focus:outline-none">
-                      <IoCopy size={24} className="text-gray-500" />
-                    </button>
-                  </CopyTooltip>
-                  {copySuccess && <span className="text-green-500 text-sm">Copied!</span>}
-                </div>
-                <DownloadTooltip text="Download PDF">
-                  <button onClick={downloadPDF} className="focus:outline-none">
-                    <RiDownloadCloudFill size={24} className="text-gray-500" />
-                  </button>
-                </DownloadTooltip>
-              </>
-            ) : (
+            <button
+              onClick={() => setViewNormalizedData(false)}
+              className={`px-2 py-1 rounded-lg ${!viewNormalizedData ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+               Dataset
+            </button>
+            {normalizedData.length > 0 && (
               <button
-                className="text-gray-500 underline"
-                onClick={() => {
-                  setViewNormalizedData(false);
-                  setNormalizedData([]);
-                }}
+                onClick={() => setViewNormalizedData(true)}
+                className={`px-2 py-1 rounded-lg ${viewNormalizedData ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
               >
-                Back to Dataset
+                Normalized Data
               </button>
             )}
           </div>
-          {!viewNormalizedData ? (
-            <pre className="text-xs whitespace-pre-wrap">{dataset ? JSON.stringify(dataset, null, 2) : 'No data available'}</pre>
+
+          {dataset && (
+            <div className="flex justify-between mb-4">
+               <div className="relative">
+              <CopyTooltip text="Copy Data">
+                <button onClick={copyJSONToClipboard} className="focus:outline-none mr-2">
+                  <IoCopy size={15} />
+                </button>
+              </CopyTooltip>
+            </div>
+            <div className="relative">
+              <DownloadTooltip text="Download Data">
+                <button onClick={downloadPDF} className="focus:outline-none">
+                  <RiDownloadCloudFill size={15} />
+                </button>
+              </DownloadTooltip>
+            </div>
+            </div>
+          )}
+
+          <div className="flex justify-between">
+            {!viewNormalizedData && (
+              <button
+                onClick={() => setShowDatasetContainer(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+              >
+                Close
+              </button>
+            )}
+            {normalizedData.length > 0 && viewNormalizedData && (
+              <button
+                onClick={() => setShowDatasetContainer(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg mb-4"
+              >
+                Close Normalized Data
+              </button>
+            )}
+          </div>
+
+          {loadingDataset ? (
+            <p>Loading dataset...</p>
+          ) : errorDataset ? (
+            <p className="text-red-500">{errorDataset}</p>
           ) : (
-            <div className="overflow-auto h-full">
-              <div className="overflow-auto h-[80vh]">
-                <table className="w-full border-collapse">
+            dataset && !viewNormalizedData && (
+              <div>
+                <pre>{JSON.stringify(dataset, null, 2)}</pre>
+              </div>
+            )
+          )}
+
+          {loadingNormalizedData ? (
+            <p>Loading normalized data...</p>
+          ) : errorNormalizedData ? (
+            <p className="text-red-500">{errorNormalizedData}</p>
+          ) : (
+            normalizedData.length > 0 &&
+            viewNormalizedData && (
+              <div className="table-container">
+                  <table className="w-full border-collapse border border-gray-300">
                   <thead>
-                    <tr>
-                      {Object.keys(normalizedData[0] || {}).map((header) => (
-                        <th key={header} className="border px-2 py-1 text-left">{header}</th>
+                  <tr className="bg-gray-100">
+                      {Object.keys(normalizedData[0]).map((key) => (
+                        <th key={key} className="border border-gray-300 py-2 px-4">{key}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {normalizedData.slice(startIndex, endIndex).map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {Object.values(row).map((value, cellIndex) => (
-                          <td key={cellIndex} className="border px-2 py-1 text-left">{value}</td>
+                    {normalizedData.slice(startIndex, endIndex).map((row, index) => (
+                      <tr key={index}  className="odd:bg-white even:bg-gray-50">
+                        {Object.values(row).map((value, i) => (
+                          <td key={i} className="border border-gray-300 py-2 px-4">{value}</td>
                         ))}
                       </tr>
                     ))}
                   </tbody>
                 </table>
+
+                <div className="flex justify-center mt-4">
+                    {Array.from({ length: Math.ceil(normalizedData.length / pageSize) }, (_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handlePageChange(i + 1)}
+                        className={`px-2 py-1 mx-1 border rounded ${currentPage === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
               </div>
-              <div className="flex justify-between mt-2">
-                <button
-                  className={`py-1 px-2 border rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200'}`}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                <button
-                  className={`py-1 px-2 border rounded ${endIndex >= normalizedData.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200'}`}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={endIndex >= normalizedData.length}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            )
           )}
         </div>
       )}
+
       {pdfUrl && (
-        <iframe
-          src={pdfUrl}
-          className="w-full h-[90vh] border border-gray-300 absolute top-20 right-4 bg-white"
-          title="PDF Data Info"
-        ></iframe>
+        <div className="absolute top-20 right-4 bg-white p-4 border border-gray-300 rounded-lg w-[600px] h-[80vh] overflow-auto">
+          <object data={pdfUrl} type="application/pdf" width="100%" height="100%">
+            <p>It appears you don't have a PDF plugin for this browser. No biggie... you can <a href={pdfUrl}>click here to download the PDF file.</a></p>
+          </object>
+          <button
+            className="text-gray-500 underline mt-4"
+            onClick={() => setPdfUrl('')}
+          >
+            Close PDF
+          </button>
+        </div>
       )}
     </div>
   );

@@ -53,10 +53,8 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="my-4 p-3 ">
-      <h2 className={`text-[#4e4d4d] mb-6 font-semibold ${isOpen ? 'text-sm' : 'text-[9px] whitespace-nowrap overflow-hidden text-ellipsis font-normal'}`}>
-        Select a Dataset
-      </h2>
+    <div className="my-4  ">
+     
       <ul>
         {datasets.map((dataset, index) => (
              <motion.li
@@ -79,17 +77,21 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
                 } ${activeDataset === dataset ? 'bg-blue-200 border-blue-400' : 'bg-gray-200 hover:bg-gray-300 border-gray-400'}`}
               >
                 <FaDatabase
-                  className={`text-[#4e4d4d] ${isOpen ? 'mr-2' : ''}`}
+                  className={`text-[#4e4d4d] ${isOpen ? 'hidden' : ''}`}
                   size={isOpen ? 12 : 16}
                   style={{ flexShrink: 0 }}
                 />
                 {isOpen && (
-                  <motion.div  initial={{ x: -50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -50, opacity: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }} className="text-[8.5px]  font-medium text-gray-600 flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {dataset.title}
-                  </motion.div>
+                 <motion.div
+                 initial={{ x: -50, opacity: 0 }}
+                 animate={{ x: 0, opacity: 1 }}
+                 exit={{ x: -50, opacity: 0 }}
+                 transition={{ duration: 0.3, delay: index * 0.1 }}
+                 className="text-[9.5px] font-medium text-gray-600 "
+               
+               >
+                 {dataset.title}
+               </motion.div>
                 )}
               </motion.button>
             </CustomTooltip>

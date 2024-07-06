@@ -113,7 +113,7 @@ const DatasetInfoComponent = ({ selectedDataset }) => {
         <div className="flex  flex-col dataset-chat h-[60vh] w-[100%] max-[768px]:w-[100%] mx-auto ">
          
           <div className="bg-[#cfc9c9] p-4 rounded-xl rounded-br-none shadow-lg w-[250px] mx-4 my-4 ml-[300px] relative">
-          <img src={logo} alt="ICED Logo" className="absolute bottom-[43px] right-[-14px] w-[25px] h-[25px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover" />
+          <img src={logo} alt="ICED Logo" className="absolute bottom-[43px] right-[-14px] w-[25px] h-[25px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover rounded-full" />
             <span className="text-gray-600">{activeQuestion.text}</span>
           </div>
           <div className="bg-blue-200 p-4 rounded-2xl rounded-bl-none shadow-md w-full max-w-md mx-4 my-4 relative">

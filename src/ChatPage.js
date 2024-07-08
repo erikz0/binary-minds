@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import SideBar from './components/SideBar';
 import Header from './components/Header';
 import React, { useState, useEffect, useRef } from 'react';
 import DatasetInfoComponent from './DatasetInfoComponent';
 import UserInput from './components/UserInput';
-import { IoPersonCircle } from 'react-icons/io5';
+import logo from './iced.png'; 
 import axios from 'axios';
 import config from './config';
 import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown for rendering markdown
@@ -169,12 +170,12 @@ const ChatPage = () => {
               setLoading={setLoading}
             />
           ) : (
-            <div className="chat-container p-4 rounded-lg h-[60vh] w-[100%] max-[768px]:w-[100%] mx-auto mb-4">
+            <div className="chat-container p-4 rounded-lg h-[60vh] w-[100%] max-[768px]:w-[100%]  mx-auto mb-4">
               {[...datasetInfoMessages, ...userMessages].map((message, index) => (
-                <div key={index} className={`message ${message.sender === 'user' ? 'text-right' : 'text-left'} mb-10 relative w-[600px] mx-auto`}>
+                <div key={index} className={`message ${message.sender === 'user' ? 'text-right' : 'text-left'} mb-10 relative w-[800px] max-[1100px]:w-[700px] max-[1024px]:w-[600px] max-[950px]:w-[500px] max-[840px]:w-[400px] max-[550px]:w-[300px] max-[460px]:w-[250px] max-[405px]:w-[235px]  max-[390px]:w-[210px] max-[365px]:w-[200px] max-[352px]:w-[180px]    mx-auto`}>
                   <div
                     className={`inline-block px-4 py-2 rounded-lg ${
-                      message.sender === 'user' ? 'bg-[#cfc9c9] text-gray-600 rounded-xl rounded-br-none shadow-lg relative' : 'bg-blue-200 text-black rounded-2xl rounded-bl-none shadow-md relative'
+                      message.sender === 'user' ? 'bg-[#cfc9c9] text-gray-600 rounded-xl rounded-br-none shadow-lg relative' : 'bg-blue-200 text-black rounded-2xl rounded-bl-none shadow-md relative max-[405px]:mt-6'
                     }`}
                   >
                     <ReactMarkdown>{message.text}</ReactMarkdown>
@@ -182,7 +183,7 @@ const ChatPage = () => {
                       <div id={`graph-container-${index}`} style={{ width: '100%', height: '400px' }}></div>
                     )}
                     {message.sender === 'user' ? (
-                      <IoPersonCircle className="absolute top-[-1rem] right-[-7px] text-3xl text-blue-500" />
+                    <img src={logo} alt="ICED Logo" className="absolute bottom-[18px] right-[-10px] w-[28.5px] h-[28.5px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover rounded-full" />
                     ) : (
                       <img src="/binary-insight-logo--.png" alt="Logo" className="w-[80px] h-[80px] object-cover absolute top-[-5.45rem] left-[-30px]" />
                     )}

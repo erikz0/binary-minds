@@ -1,34 +1,15 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// import { Container} from '@mui/material';
 import { useAuth } from './AuthContext';
 import Login from './Login';
-import DatasetMenu from './DatasetMenu';
 import config from './config';
-// import { makeStyles } from '@mui/styles';
-// import logo from './iced.png'; // Make sure the logo is imported
 import ChatPage from './ChatPage'
 import './index.css';
 
 
  
-
-// const useStyles = makeStyles({
-//   logo: {
-//     position: 'absolute',
-//     top: '10px',
-//     right: '10px',
-//     width: '50px',
-//     height: '50px',
-//   },
-//   container: {
-//     backgroundColor: '#FFFFFF',
-//     color: '#002F6C',
-//     height: '100vh',
-//     position: 'relative', 
-//   },
-// });
 
 const App = () => {
   const [input, setInput] = useState('');
@@ -42,7 +23,7 @@ const App = () => {
   const [datasetFile, setDatasetFile] = useState('');
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
-  // const classes = useStyles();
+ 
 
   useEffect(() => {
     console.log('Checking token...');
@@ -96,7 +77,7 @@ const App = () => {
   };
 
   return (
-    // <Container maxWidth={false}>
+   
 
     <div>
     <><Routes>

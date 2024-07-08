@@ -3,8 +3,7 @@ import axios from 'axios';
 import { FaDatabase } from 'react-icons/fa';
 import CustomTooltip from './components/CustomTooltip'; // Import your custom tooltip component
 import config from './config';
-import { motion } from 'framer-motion'; 
-
+import { motion } from 'framer-motion';
 
 const DatasetMenu = ({ onSelectDataset, isOpen }) => {
   const [datasets, setDatasets] = useState([]);
@@ -14,7 +13,7 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
 
   useEffect(() => {
     const fetchDatasets = async () => {
-      try { 
+      try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${config.serverUrl}/data/list`, {
           headers: {
@@ -22,7 +21,7 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
           },
         });
 
-        console.log("fetch dataset:" + response.data)
+        console.log("fetch dataset:" + response.data);
 
         setDatasets(response.data);
         setLoading(false);
@@ -53,29 +52,27 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="my-4 p-3 ">
-      <h2 className={`text-[#4e4d4d] mb-6 font-semibold ${isOpen ? 'text-sm' : 'text-[9px] whitespace-nowrap overflow-hidden text-ellipsis font-normal'}`}>
-        Select a Dataset
-      </h2>
+    <div className="my-4 ">
+     
       <ul>
         {datasets.map((dataset, index) => (
-             <motion.li
-             key={index}
-             className="mb-2 transition-opacity duration-300"
-             initial={{ x: -50, opacity: 0 }}
-             animate={{ x: 0, opacity: 1 }}
-             exit={{ x: -50, opacity: 0 }}
-             transition={{ duration: 0.3, delay: index * 0.1 }}
-           >
+          <motion.li
+            key={index}
+            className="mb-2 transition-opacity duration-300"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -50, opacity: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
             <CustomTooltip text={dataset.title}>
               <motion.button
-               initial={{ x: -50, opacity: 0 }}
-               animate={{ x: 0, opacity: 1 }}
-               exit={{ x: -50, opacity: 0 }}
-               transition={{ duration: 0.3, delay: index * 0.1 }}
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -50, opacity: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
                 onClick={() => handleDatasetSelect(dataset)}
                 className={`px-1 py-2 border rounded cursor-pointer flex items-center mb-3 transition duration-300 ${
-                  isOpen ? 'text-left w-full ' : 'justify-center w-fit'
+                  isOpen ? 'text-left w-full' : 'justify-center w-fit'
                 } ${activeDataset === dataset ? 'bg-blue-200 border-blue-400' : 'bg-gray-200 hover:bg-gray-300 border-gray-400'}`}
               >
                 <FaDatabase
@@ -84,16 +81,19 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
                   style={{ flexShrink: 0 }}
                 />
                 {isOpen && (
-                  <motion.div  initial={{ x: -50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -50, opacity: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }} className="text-[8.5px]  font-medium text-gray-600 flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <motion.div
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -50, opacity: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="text-[8.5px] font-medium text-gray-600 ellipsis"
+                  >
                     {dataset.title}
                   </motion.div>
                 )}
               </motion.button>
             </CustomTooltip>
-            </motion.li>
+          </motion.li>
         ))}
       </ul>
     </div>

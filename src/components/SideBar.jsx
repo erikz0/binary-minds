@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import logo from '../iced.png';
 import { motion, useAnimationControls } from 'framer-motion';
 import DatasetMenu from '../DatasetMenu';
-import { toast, ToastContainer, Slide } from 'react-toastify';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 const containerVariants = {
@@ -60,7 +60,7 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
         variants={containerVariants}
         animate={containerControls}
         initial="open"
-        className={`bg-[#f9f9f9] flex flex-col  p-5 sidebar shadow shadow-neutral-600 h-screen ${isOpen ? '' : ''}`}
+        className={`bg-[#f9f9f9] flex flex-col  p-3 sidebar shadow shadow-neutral-600 h-screen ${isOpen ? '' : ''}`}
       >
 
 

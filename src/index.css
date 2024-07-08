@@ -12,6 +12,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
 }
 
 /* h1 {
@@ -21,6 +22,7 @@ body {
 
 html {
   scroll-behavior: smooth;
+ 
 }
 
 
@@ -72,6 +74,7 @@ code {
 
 
 .chat-container {
+ 
   /* Set a max height to enable scrolling */
   overflow-y: auto; /* Enable vertical scrolling */
   scrollbar-width: thin; /* Set the width of the scrollbar */
@@ -172,6 +175,18 @@ code {
 }
 
 
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; /* You can adjust the max-width value as needed */
+  display: inline-block;
+  vertical-align: top;
+}
+
+
+
+
 /* global styles */
 @media (min-width: 768px) {
   .main-content {
@@ -203,8 +218,8 @@ code {
     top: 0;
     left: 0;
     z-index: 1000;
-    height: 130vh;
-   
+    height: 100vh;
+    
   }
 }
 

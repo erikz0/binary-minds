@@ -43,4 +43,12 @@
       scrollbar-color: #1d4487 #f3f4f6;
     }
   }
-  
+
+
+  @media (max-width: 405px) {
+    .dataset-info-container {
+      gap: 3rem; 
+    }
+  }
+
+

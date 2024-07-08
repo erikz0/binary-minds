@@ -58,7 +58,7 @@ const DatasetInfoComponent = ({ selectedDataset, handleSendMessage, loading, set
           </div>
         </div>
       ) : activeQuestion ? (
-        <div className="flex  flex-col dataset-chat h-[60vh] w-[100%] max-[768px]:w-[100%] mx-auto ">
+        <div className="flex  flex-col dataset-chat h-[60vh] w-[100%] max-[768px]:w-[100%] mx-auto  ">
           <div className="bg-[#cfc9c9] p-4 rounded-xl rounded-br-none shadow-lg w-[250px] mx-4 my-4 ml-[300px] relative">
             <img src={logo} alt="ICED Logo" className="absolute bottom-[43px] right-[-14px] w-[25px] h-[25px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover" />
             <span className="text-gray-600">{activeQuestion.text}</span>

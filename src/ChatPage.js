@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+
 import SideBar from './components/SideBar';
 import Header from './components/Header';
 import React, { useState, useEffect, useRef } from 'react';
@@ -7,9 +8,10 @@ import UserInput from './components/UserInput';
 import logo from './iced.png'; 
 import axios from 'axios';
 import config from './config';
-import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown for rendering markdown
+import { IoMdCloudDownload } from 'react-icons/io';
+import ReactMarkdown from 'react-markdown';
 import { toast, Slide, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
+import 'react-toastify/dist/ReactToastify.css';
 
 const ChatPage = () => {
   const [selectedDataset, setSelectedDataset] = useState(null);
@@ -34,12 +36,10 @@ const ChatPage = () => {
   };
 
   const addDatasetInfoMessage = (message) => {
-    console.log("Adding dataset info message:", message);
     setDatasetInfoMessages((prevMessages) => [...prevMessages, message]);
   };
 
   const addUserMessage = (message, graphCode = null) => {
-    console.log("Adding user message:", message, "Graph code:", graphCode);
     setUserMessages((prevMessages) => [...prevMessages, { ...message, graphCode }]);
   };
 
@@ -50,7 +50,6 @@ const ChatPage = () => {
     addUserMessage({ sender: 'user', text: inputValue });
 
     if (!selectedDataset) {
-      // Mock server response for no selected dataset
       addUserMessage({ sender: 'bot', text: 'Please select a dataset before continuing to chat' });
       return;
     }
@@ -73,9 +72,7 @@ const ChatPage = () => {
         }
       );
 
-      // Add the response message to the chat
       const { summary, graphCode, reply } = response.data;
-      console.log("Received summary:", summary, "Graph code:", graphCode, "Reply:", reply);
 
       if (graphCode) {
         addUserMessage({ sender: 'bot', text: summary }, graphCode);
@@ -83,7 +80,6 @@ const ChatPage = () => {
         addUserMessage({ sender: 'bot', text: reply });
       }
     } catch (error) {
-      console.error('Error sending message:', error);
       addUserMessage({ sender: 'bot', text: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
@@ -97,7 +93,6 @@ const ChatPage = () => {
 
     userMessages.forEach((message, index) => {
       if (message.graphCode) {
-        console.log(`Rendering graph for message at index ${index} with graphCode`, message.graphCode);
         const el = document.getElementById(`graph-container-${index}`);
         renderGraph(el, message.graphCode, retrievedDataset, index);
       }
@@ -107,11 +102,7 @@ const ChatPage = () => {
   const renderGraph = (el, graphCode, dataset, index) => {
     if (!el || !graphCode) return;
 
-    console.log(`Rendering graph in element ${el.id} with dataset`, dataset);
-    console.log(`Dataset type: ${typeof dataset}, isArray: ${Array.isArray(dataset)}`);
-
     if (!Array.isArray(dataset)) {
-      console.error("Dataset is not an array. Cannot render graph.");
       return;
     }
 
@@ -147,14 +138,29 @@ const ChatPage = () => {
         } else {
           setRetrievedDataset(parsedData);
         }
-        console.log("Retrieved dataset:", parsedData);
       } catch (error) {
-        console.error('Error fetching dataset:', error);
       }
     };
 
     fetchData();
   }, [selectedDataset]);
+
+
+  const handleDownload = (index) => {
+    const canvas = document.getElementById(`graph-canvas-${index}`);
+
+    if (!canvas) {
+        return;
+    }
+
+    const imageURL = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = imageURL;
+    a.download = 'graph.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   return (
     <main className="w-full h-screen flex relative">
@@ -172,7 +178,7 @@ const ChatPage = () => {
           ) : (
             <div className="chat-container p-4 rounded-lg h-[60vh] w-[100%] max-[768px]:w-[100%]  mx-auto mb-4">
               {[...datasetInfoMessages, ...userMessages].map((message, index) => (
-                <div key={index} className={`message ${message.sender === 'user' ? 'text-right' : 'text-left'} mb-10 relative w-[800px] max-[1100px]:w-[700px] max-[1024px]:w-[600px] max-[950px]:w-[500px] max-[840px]:w-[400px] max-[550px]:w-[300px] max-[460px]:w-[250px] max-[405px]:w-[235px]  max-[390px]:w-[210px] max-[365px]:w-[200px] max-[352px]:w-[180px]    mx-auto`}>
+                <div key={index} className={`message ${message.sender === 'user' ? 'text-right' : 'text-left'} mb-10 relative w-[800px] max-[1100px]:w-[700px] max-[1024px]:w-[600px] max-[950px]:w-[500px] max-[840px]:w-[400px] max-[550px]:w-[300px] max-[460px]:w-[250px] max-[405px]:w-[235px]  max-[390px]:w-[210px] max-[365px]:w-[200px] max-[352px]:w-[180px] mx-auto`}>
                   <div
                     className={`inline-block px-4 py-2 rounded-lg ${
                       message.sender === 'user' ? 'bg-[#cfc9c9] text-gray-600 rounded-xl rounded-br-none shadow-lg relative' : 'bg-blue-200 text-black rounded-2xl rounded-bl-none shadow-md relative max-[405px]:mt-6'
@@ -182,14 +188,31 @@ const ChatPage = () => {
                     {message.graphCode && (
                       <div id={`graph-container-${index}`} style={{ width: '100%', height: '400px' }}></div>
                     )}
+                    {message.graphCode && (
+                      <div className="relative">
+                        <button
+                          onClick={() => handleDownload(index)}
+                          className="absolute top-2 left-1"
+                        >
+                          <IoMdCloudDownload size={24} className='text-[#1d4487] relative hover:scale-110 transition duration-300' />
+                        </button>
+                      </div>
+                    )}
                     {message.sender === 'user' ? (
-                    <img src={logo} alt="ICED Logo" className="absolute bottom-[18px] right-[-10px] w-[28.5px] h-[28.5px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover rounded-full" />
+                      <img src={logo} alt="ICED Logo" className="absolute bottom-[18px] right-[-10px] w-[28.5px] h-[28.5px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover rounded-full" />
                     ) : (
                       <img src="/binary-insight-logo--.png" alt="Logo" className="w-[80px] h-[80px] object-cover absolute top-[-5.45rem] left-[-30px]" />
                     )}
                   </div>
                 </div>
               ))}
+              {loading && (
+                <div className="message text-left mb-10 relative w-[800px] max-[1100px]:w-[700px] max-[1024px]:w-[600px] max-[950px]:w-[500px] max-[840px]:w-[400px] max-[550px]:w-[300px] max-[460px]:w-[250px] max-[405px]:w-[235px] max-[390px]:w-[210px] max-[365px]:w-[200px] max-[352px]:w-[180px] mx-auto">
+                  <div className="loading-message bg-blue-200 text-black inline-block px-4 py-2 rounded-2xl rounded-bl-none shadow-md relative max-[405px]:mt-6">
+                    Fetching Response from AI<span className="dots"></span>
+                  </div>
+                </div>
+              )}
               <div ref={messageEndRef} />
             </div>
           )}
@@ -209,3 +232,4 @@ const ChatPage = () => {
 };
 
 export default ChatPage;
+

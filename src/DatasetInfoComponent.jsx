@@ -77,7 +77,7 @@ const DatasetInfoComponent = ({ selectedDataset, handleSendMessage, loading, set
           {initialQuestions.map((question) => (
             <div
               key={question.id}
-              className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-4 my-2 cursor-pointer hover:scale-105 transition duration-300"
+              className="bg-white p-3 rounded-lg shadow-md w-full max-w-md mx-4 my-1 cursor-pointer hover:scale-105 transition duration-300 "
               onClick={() => handleQuestionClick(question.id)}
             >
               <div className="flex items-start">

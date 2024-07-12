@@ -300,7 +300,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [markdownContent, setMarkdownContent] = useState(''); // State to store Markdown content
 
   const dropdownRef = useRef(null);
-  const pageSize = 170; // Define pageSize for pagination
+  const pageSize = 10; // Define pageSize for pagination
 
   useEffect(() => {
     const fetchDataset = async () => {
@@ -436,7 +436,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
            }}
          />
         {showDropdown && (
-          <div ref={dropdownRef} className="absolute top-24 right-0 bg-white border border-gray-300 shadow-lg px-2 py-2 rounded-lg">
+          <div ref={dropdownRef} className="absolute top-24 right-0 bg-white border border-gray-300 shadow-lg px-2 py-2 rounded-lg z-50">
             <div
               className="flex cursor-pointer mb-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition duration-300"
               onClick={() => handleDatasetSelect(selectedDataset)}
@@ -499,8 +499,8 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
           {!viewNormalizedData ? (
             <pre className="text-xs whitespace-pre-wrap">{dataset ? JSON.stringify(dataset, null, 2) : 'No data available'}</pre>
           ) : (
-            <div className="overflow-auto h-full">
-              <div className="overflow-auto h-[80vh]">
+            <div className=" h-full ">
+              <div className="">
                 <table className="w-full border-collapse">
                   <thead>
                     <tr>

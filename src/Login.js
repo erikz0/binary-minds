@@ -66,7 +66,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import config from './config';
-import logo from './iced.png';
+import logo from './assets/images/iced.png';
 
 const Login = ({ onLogin, setIsAuthenticated }) => {
   const [password, setPassword] = useState('');

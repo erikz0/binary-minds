@@ -3,7 +3,8 @@ import { toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import toastify CSS
 import { Oval } from 'react-loader-spinner'; // Import Oval from react-loader-spinner
 import { FaInfoCircle, FaColumns, FaChartBar, FaQuestionCircle } from 'react-icons/fa';
-import logo from './iced.png';
+import logo from './assets/images/iced.png';
+import bmlogo from './assets/images/binary-insight-logo--.png'
 import './DatasetInfoComponent.css'; // Import your CSS file
 
 const DatasetInfoComponent = ({ selectedDataset, handleSendMessage, loading, setLoading }) => {
@@ -64,7 +65,7 @@ const DatasetInfoComponent = ({ selectedDataset, handleSendMessage, loading, set
             <span className="text-gray-600">{activeQuestion.text}</span>
           </div>
           <div className="bg-blue-200 p-4 rounded-2xl rounded-bl-none shadow-md w-full max-w-md mx-4 my-4 relative">
-            <img src="/binary-insight-logo--.png" alt="Logo" className="w-[80px] h-[80px] max-[860px]:w-[60px] max-[860px]:h-[60px] object-cover absolute bottom-[170px] left-[-30px]" />
+            <img src={bmlogo} alt="Logo" className="w-[80px] h-[80px] max-[860px]:w-[60px] max-[860px]:h-[60px] object-cover absolute bottom-[170px] left-[-30px]" />
             <span>{activeQuestion.response}</span>
           </div>
         </div>
@@ -72,7 +73,7 @@ const DatasetInfoComponent = ({ selectedDataset, handleSendMessage, loading, set
         <>
           <div className="w-full flex flex-col  justify-center items-center ">
             <h3 className='font-semibold max-[460px]:text-sm max-[430px]:text-xs'>Please Select a Dataset from the Sidebar to get started</h3>
-            <img src="/binary-insight-logo--.png" alt="Logo" className="w-[11rem] object-cover " />
+            <img src={bmlogo} alt="Logo" className="w-[11rem] object-cover " />
           </div>
           {initialQuestions.map((question) => (
             <div

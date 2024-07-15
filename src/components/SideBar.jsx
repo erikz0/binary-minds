@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../iced.png';
+import logo from '../assets/images/iced.png';
 import { motion, useAnimationControls } from 'framer-motion';
 import DatasetMenu from '../DatasetMenu';
 
@@ -15,7 +15,7 @@ const containerVariants = {
     },
   },
   open: {
-    width: '16rem',
+    width: '20rem',
     transition: {
       type: 'spring',
       damping: 15,

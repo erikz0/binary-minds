@@ -144,7 +144,7 @@
 //       <h1 className="text-lg font-bold max-[480px]:text-sm">ICED DATASET</h1>
 //       <div className="relative">
 //         <img
-//           src="/binary-insight-logo--.png"
+//           src="./assets/images/binary-insight-logo--.png"
 //           alt="Binary Insight Logo"
 //           className="cursor-pointer object-cover  w-[7rem]"
 //           onClick={() => {
@@ -282,8 +282,9 @@ import CopyTooltip from './CopyTooltip';
 import DownloadTooltip from './DownloadTooltip';
 import { BsListColumnsReverse } from "react-icons/bs";
 import { toast } from 'react-toastify';
- import 'react-toastify/dist/ReactToastify.css';
- import { MdCancel } from "react-icons/md";
+import 'react-toastify/dist/ReactToastify.css';
+import { MdCancel } from "react-icons/md";
+import bmlogo from '../assets/images/binary-insight-logo--.png'
 
 const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -302,11 +303,23 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const dropdownRef = useRef(null);
   const pageSize = 10; // Define pageSize for pagination
 
+  const datasetCache = useRef({});
+
   useEffect(() => {
     const fetchDataset = async () => {
       setLoadingDataset(true);
       setErrorDataset(null);
+
       if (selectedDataset) {
+        const cacheKey = `${selectedDataset.package}/${selectedDataset.file}`;
+
+        // Check if data is in cache
+        if (datasetCache.current[cacheKey]) {
+          setDataset(datasetCache.current[cacheKey]);
+          setLoadingDataset(false);
+          return;
+        }
+
         try {
           const token = localStorage.getItem('token');
           const dataResponse = await axios.get(`${config.serverUrl}/metadata/data/${selectedDataset.package}/${selectedDataset.file}`, {
@@ -314,6 +327,9 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
               Authorization: `Bearer ${token}`,
             },
           });
+
+          // Store data in cache
+          datasetCache.current[cacheKey] = dataResponse.data;
           setDataset(dataResponse.data);
           setShowDatasetContainer(false); // Close dataset container initially when dataset changes
         } catch (error) {
@@ -326,7 +342,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     };
 
     fetchDataset();
-  }, [selectedDataset]);
+  }, [selectedDataset, datasetCache]);
 
   const fetchNormalizedData = async () => {
     setLoadingNormalizedData(true);
@@ -417,7 +433,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
       <h1 className="text-lg font-bold max-[480px]:text-sm">ICED DATASET</h1>
       <div className="relative">
       <img
-           src="/binary-insight-logo--.png"
+           src={bmlogo}
            alt="Binary Insight Logo"
            className="cursor-pointer object-cover  w-[7rem]"
            onClick={() => {

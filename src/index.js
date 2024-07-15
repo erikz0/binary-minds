@@ -12,7 +12,7 @@ const root = createRoot(container);
 
 // Initial render
 root.render(
-  <Router>
+  <Router basename="/iced-data-analysis">
     <AuthProvider>
       <App />
     </AuthProvider>

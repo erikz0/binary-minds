@@ -86,7 +86,7 @@ const DatasetMenu = ({ onSelectDataset, isOpen }) => {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -50, opacity: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="text-[8.5px] font-medium text-gray-600 ellipsis"
+                    className="text-[8.5px] font-medium text-gray-600"
                   >
                     {dataset.title}
                   </motion.div>

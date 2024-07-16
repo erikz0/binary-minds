@@ -118,32 +118,62 @@ const ChatPage = () => {
 
     getMessagesForSession(getCurrentSessionId(selectedDataset)).forEach((message, index) => {
       if (message.graphCode) {
-        const el = document.getElementById(`graph-container-${index}`);
+        const el = document.getElementById(`graph-container-${index}`); 
         renderGraph(el, message.graphCode, retrievedDataset, index);
       }
     });
   });
 
+  // const renderGraph = (el, graphCode, dataset, index) => {
+  //   if (!el || !graphCode) return;
+
+  //   if (!Array.isArray(dataset)) {
+  //     return;
+  //   }
+
+  //   el.innerHTML = `<canvas id="graph-canvas-${index}" style="width: 100%; height: 100%;"></canvas>`;
+
+  //   const script = document.createElement('script');
+  //   script.type = 'text/javascript';
+  //   script.text = `
+  //     (function() {
+  //       const ctx = document.getElementById('graph-canvas-${index}').getContext('2d');
+  //       const dataset = ${JSON.stringify(dataset)};
+  //       ${graphCode}
+  //     })();
+  //   `;
+  //   el.appendChild(script);
+  // };
+
+
   const renderGraph = (el, graphCode, dataset, index) => {
-    if (!el || !graphCode) return;
+  if (!el || !graphCode) return;
 
-    if (!Array.isArray(dataset)) {
-      return;
-    }
+  if (!Array.isArray(dataset)) {
+    return;
+  }
 
-    el.innerHTML = `<canvas id="graph-canvas-${index}" style="width: 100%; height: 100%;"></canvas>`;
+  el.innerHTML = `<canvas id="graph-canvas-${index}" style="width: 100%; height: 100%;"></canvas>`;
 
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.text = `
-      (function() {
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  
+  // Using template literals for safer and easier formatting
+  script.text = `
+    (function() {
+      try {
         const ctx = document.getElementById('graph-canvas-${index}').getContext('2d');
         const dataset = ${JSON.stringify(dataset)};
         ${graphCode}
-      })();
-    `;
-    el.appendChild(script);
-  };
+      } catch (error) {
+        console.error('Error rendering graph:', error);
+      }
+    })();
+  `;
+
+  el.appendChild(script);
+};
+
 
   // Simple in-memory cache
   const cache = useRef({});
@@ -218,7 +248,7 @@ const ChatPage = () => {
                 <div key={index} className={`message ${message.sender === 'user' ? 'text-right' : 'text-left'} mb-10 relative w-[800px] max-[1100px]:w-[700px] max-[1024px]:w-[600px] max-[950px]:w-[500px] max-[840px]:w-[400px] max-[550px]:w-[300px] max-[460px]:w-[250px] max-[405px]:w-[235px]  max-[390px]:w-[210px] max-[365px]:w-[200px] max-[352px]:w-[180px] mx-auto`}>
                   <div
                     className={`inline-block px-4 py-2 rounded-lg ${
-                      message.sender === 'user' ? 'bg-[#cfc9c9] text-gray-600 rounded-xl rounded-br-none shadow-lg relative' : 'bg-blue-200 text-black rounded-2xl rounded-bl-none shadow-md relative max-[405px]:mt-6'
+                      message.sender === 'user' ? 'bg-[#cfc9c9] text-gray-600 text-left rounded-xl rounded-br-none shadow-lg relative max-w-[50%] w-auto' : 'bg-blue-200 text-black rounded-2xl rounded-bl-none shadow-md relative max-[405px]:mt-6'
                     }`}
                   >
                     <ReactMarkdown>{message.text}</ReactMarkdown>

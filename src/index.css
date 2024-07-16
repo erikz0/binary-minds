@@ -192,7 +192,7 @@ code {
   font-size: 1.1rem;
   color: #474646;
   animation: fadeIn 0.5s ease-in-out;
-  width: 230px;
+  width: 50px;
 }
 
 @keyframes fadeIn {
@@ -212,7 +212,7 @@ code {
   content: '';
   display: inline-block;
   width: 1em;
-  text-align: left;
+  text-align: center;
   animation: dots 1s steps(4, end) infinite;
 }
 
@@ -265,14 +265,5 @@ code {
 }
 
 
-@media (max-width: 380px) {
-  .loading-message {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    font-size: 0.85rem;
-    color: #474646;
-    animation: fadeIn 0.5s ease-in-out;
-    width: 185px;
-  }
-}
+
+

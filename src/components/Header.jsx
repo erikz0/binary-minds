@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -28,6 +27,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewNormalizedData, setViewNormalizedData] = useState(false);
   const [markdownContent, setMarkdownContent] = useState(''); // State to store Markdown content
+  const [pdfContent, setPdfContent] = useState(null); // State to store PDF content
 
   const dropdownRef = useRef(null);
   const pageSize = 10; // Define pageSize for pagination
@@ -107,8 +107,26 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
         },
       });
       setMarkdownContent(markdownResponse.data);
+      setShowDropdown(false);
     } catch (error) {
       console.error('Error fetching Markdown data info:', error);
+    }
+  };
+
+  const fetchPdfData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const pdfResponse = await axios.get(`${config.serverUrl}/data-pdf/${selectedDataset.package}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'arraybuffer', // Ensure the response is treated as binary data
+      });
+      const pdfBlob = new Blob([pdfResponse.data], { type: 'application/pdf' });
+      setPdfContent(URL.createObjectURL(pdfBlob));
+      setShowDropdown(false);
+    } catch (error) {
+      console.error('Error fetching PDF data:', error);
     }
   };
 
@@ -129,6 +147,10 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     fetchMarkdownDataInfo();
   };
 
+  const handlePdfSelect = () => {
+    fetchPdfData();
+  };
+
   const copyJSONToClipboard = () => {
     if (!dataset) return;
     navigator.clipboard.writeText(JSON.stringify(dataset, null, 2));
@@ -136,18 +158,6 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     setTimeout(() => {
       setCopySuccess(false);
     }, 3000); // Reset copy success message after 3 seconds
-  };
-
-  const downloadMarkdown = () => {
-    if (!markdownContent) return;
-
-    const blob = new Blob([markdownContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'data_info.md';
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   const handlePageChange = (page) => {
@@ -161,25 +171,28 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     <div className="flex justify-between items-center border-b border-gray-300 relative">
       <h1 className="text-lg font-bold max-[480px]:text-sm">ICED DATASET</h1>
       <div className="relative">
-      <img
-           src={bmlogo}
-           alt="Binary Insight Logo"
-           className="cursor-pointer object-cover  w-[7rem]"
-           onClick={() => {
-             if (!selectedDataset) {
-               toast.error("Please select a dataset first.");
-               return;
-             }
-             if (showDatasetContainer) {
-               setShowDatasetContainer(false);
-             } else {
-               setShowDropdown((prevShowDropdown) => !prevShowDropdown);
-             } 
-             if (markdownContent) {
+        <img
+          src={bmlogo}
+          alt="Binary Insight Logo"
+          className="cursor-pointer object-cover w-[7rem]"
+          onClick={() => {
+            if (!selectedDataset) {
+              toast.error("Please select a dataset first.");
+              return;
+            }
+            if (showDatasetContainer) {
+              setShowDatasetContainer(false);
+            } else {
+              setShowDropdown((prevShowDropdown) => !prevShowDropdown);
+            }
+            if (markdownContent) {
               setMarkdownContent(''); // Close markdown content when logo is clicked
             }
-           }}
-         />
+            if (pdfContent) {
+              setPdfContent(null); // Close PDF content when logo is clicked
+            }
+          }}
+        />
         {showDropdown && (
           <div ref={dropdownRef} className="absolute top-24 right-0 bg-white border border-gray-300 shadow-lg px-2 py-2 rounded-lg z-50">
             <div
@@ -203,6 +216,13 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
               <span className="text-sm white-space-nowrap mr-16 items-start text-gray-700">Data Info</span>
               <BsListColumnsReverse size={16} className="ml-2 text-red-500" />
             </div>
+            <div
+              className="flex cursor-pointer mb-2 px-4 py-2 hover:bg-gray-100 rounded-lg transition duration-300"
+              onClick={handlePdfSelect}
+            >
+              <span className="text-sm white-space-nowrap mr-16 items-start text-gray-700">Data PDF</span>
+              <BsListColumnsReverse size={16} className="ml-2 text-blue-500" />
+            </div>
           </div>
         )}
       </div>
@@ -219,32 +239,17 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
                   </CopyTooltip>
                   {copySuccess && <span className="text-green-500 text-sm">Copied to Clipboard!</span>}
                 </div>
-                {/* <DownloadTooltip text="Download Dataset">
-                  <button onClick={downloadMarkdown} className="focus:outline-none">
-                    <RiDownloadCloudFill size={24} className="text-gray-500" />
-                  </button>
-                </DownloadTooltip> */}
               </>
             ) : (
-              // <button
-              //   className="text-gray-500 underline"
-              //   onClick={() => {
-              //     setViewNormalizedData(false);
-              //     setNormalizedData([]);
-              //   }}
-              // >
-              //   Back to Dataset
-              // </button>
-
               <button onClick={() => setShowDatasetContainer(false)} className="focus:outline-none">
-                               Close
-                            </button>
+                Close
+              </button>
             )}
           </div>
           {!viewNormalizedData ? (
             <pre className="text-xs whitespace-pre-wrap">{dataset ? JSON.stringify(dataset, null, 2) : 'No data available'}</pre>
           ) : (
-            <div className=" h-full ">
+            <div className="h-full">
               <div className="">
                 <table className="w-full border-collapse">
                   <thead>
@@ -287,18 +292,15 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
       )}
       {markdownContent && (
         <div className="w-full h-[70vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 overflow-auto z-50">
-          <div className="flex justify-between items-center mb-4">
-            <button onClick={() => setMarkdownContent('')} className="text-gray-500">
-            <MdCancel size={16} />
-            </button>
-            <DownloadTooltip text="Download Markdown">
-            <button onClick={downloadMarkdown} className="text-gray-500">
-              <RiDownloadCloudFill size={24} />
-            </button>
-            </DownloadTooltip>
-          </div>
           <div className="bg-white p-4 rounded-lg shadow-lg w-full h-full overflow-auto">
             <ReactMarkdown>{markdownContent}</ReactMarkdown>
+          </div>
+        </div>
+      )}
+      {pdfContent && (
+        <div className="w-full h-[70vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 overflow-auto z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg w-full h-full overflow-auto">
+            <iframe src={pdfContent} title="Data PDF" className="w-full h-full" />
           </div>
         </div>
       )}

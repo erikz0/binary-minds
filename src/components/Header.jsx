@@ -25,6 +25,8 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const [errorNormalizedData, setErrorNormalizedData] = useState(null);
   const [showDatasetContainer, setShowDatasetContainer] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(null);
   const [viewNormalizedData, setViewNormalizedData] = useState(false);
   const [markdownContent, setMarkdownContent] = useState(''); // State to store Markdown content
   const [pdfContent, setPdfContent] = useState(null); // State to store PDF content
@@ -74,7 +76,8 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   }, [selectedDataset, datasetCache]);
 
   const fetchNormalizedData = async () => {
-    setLoadingNormalizedData(true);
+    setLoading(true); 
+    setError(null); 
     setErrorNormalizedData(null);
     try {
       const token = localStorage.getItem('token');
@@ -94,11 +97,15 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
     } catch (error) {
       console.error('Error loading normalized data:', error);
       setErrorNormalizedData('Error loading normalized data');
-      setLoadingNormalizedData(false);
+    } finally {
+      setLoading(false); // Hide loading indicator (always)
     }
   };
 
+
   const fetchMarkdownDataInfo = async () => {
+    setLoading(true); 
+    setError(null); 
     try {
       const token = localStorage.getItem('token');
       const markdownResponse = await axios.get(`${config.serverUrl}/data-info/${selectedDataset.package}`, {
@@ -110,10 +117,14 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
       setShowDropdown(false);
     } catch (error) {
       console.error('Error fetching Markdown data info:', error);
+    } finally {
+      setLoading(false); // Hide loading indicator (always)
     }
   };
 
   const fetchPdfData = async () => {
+    setLoading(true); 
+    setError(null); 
     try {
       const token = localStorage.getItem('token');
       const pdfResponse = await axios.get(`${config.serverUrl}/data-pdf/${selectedDataset.package}`, {
@@ -127,6 +138,8 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
       setShowDropdown(false);
     } catch (error) {
       console.error('Error fetching PDF data:', error);
+    } finally {
+      setLoading(false); // Hide loading indicator (always)
     }
   };
 
@@ -167,6 +180,20 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = currentPage * pageSize;
 
+
+  if (loading) { 
+    return (
+      <div className="flex justify-center items-center">
+        <div className="spinner">
+          <div className="double-bounce1"></div>
+          <div className="double-bounce2"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) return <div className="text-red-500">{error}</div>; 
+
   return (
     <div className="flex justify-between items-center border-b border-gray-300 relative">
       <h1 className="text-lg font-bold max-[480px]:text-sm">ICED DATASET</h1>
@@ -174,7 +201,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
         <img
           src={bmlogo}
           alt="Binary Insight Logo"
-          className="cursor-pointer object-cover w-[7rem]"
+          className="cursor-pointer object-cover w-[7.25rem]"
           onClick={() => {
             if (!selectedDataset) {
               toast.error("Please select a dataset first.");
@@ -187,9 +214,12 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
             }
             if (markdownContent) {
               setMarkdownContent(''); // Close markdown content when logo is clicked
+             
             }
             if (pdfContent) {
+             
               setPdfContent(null); // Close PDF content when logo is clicked
+             
             }
           }}
         />
@@ -227,7 +257,7 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
         )}
       </div>
       {showDatasetContainer && (
-        <div className={`p-4 overflow-auto h-[80vh] border border-gray-300 absolute top-20 right-4 bg-white header-data ${viewNormalizedData ? 'w-full' : 'w-[300px]'} max-w-full`}>
+        <div className={`p-4 normalized-container h-[85vh] border border-gray-300 absolute top-20 right-4 bg-white header-data ${viewNormalizedData ? 'w-full' : 'w-[300px]'} max-w-full`}>
           <div className="flex justify-between mb-4">
             {!viewNormalizedData ? (
               <>
@@ -242,14 +272,14 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
               </>
             ) : (
               <button onClick={() => setShowDatasetContainer(false)} className="focus:outline-none">
-                Close
+               <MdCancel size={16} className="text-gray-500" />
               </button>
             )}
           </div>
           {!viewNormalizedData ? (
             <pre className="text-xs whitespace-pre-wrap">{dataset ? JSON.stringify(dataset, null, 2) : 'No data available'}</pre>
           ) : (
-            <div className="h-full">
+            <div className="h-full ">
               <div className="">
                 <table className="w-full border-collapse">
                   <thead>
@@ -291,15 +321,18 @@ const Header = ({ selectedDataset, setSelectedDataset }) => {
         </div>
       )}
       {markdownContent && (
-        <div className="w-full h-[70vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 overflow-auto z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg w-full h-full overflow-auto">
+        <div className="w-full h-[85vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 mark-down-data">
+            <button onClick={() => setMarkdownContent('')} className="text-gray-500">
+              <MdCancel size={16} />
+            </button>
+          <div className="w-full h-full ">
             <ReactMarkdown>{markdownContent}</ReactMarkdown>
           </div>
         </div>
       )}
       {pdfContent && (
-        <div className="w-full h-[70vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 overflow-auto z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg w-full h-full overflow-auto">
+        <div className="w-full h-[85vh] border border-gray-300 absolute top-20 right-4 bg-white p-4 pdf-container ">
+          <div className=" p-4 rounded-lg shadow-lg w-full h-full ">
             <iframe src={pdfContent} title="Data PDF" className="w-full h-full" />
           </div>
         </div>

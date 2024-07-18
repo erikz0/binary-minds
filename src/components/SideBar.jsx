@@ -65,7 +65,7 @@ const SideBar = ({ onSelectDataset, setSidebarWidth }) => {
 
 
         <div className={`flex flex-row w-full place-items-center ${isOpen ? 'justify-between' : 'gap-2'}`}>
-          <img src={logo} alt="ICED Logo" style={{ width: '30px', height: '30px' }} />
+          <img src={logo} alt="ICED Logo" style={{ width: '38px', height: '38px' }} />
 
           <button className="rounded-full flex" onClick={handleOpenClose}>
             <svg

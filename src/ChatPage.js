@@ -124,26 +124,6 @@ const ChatPage = () => {
     });
   });
 
-  // const renderGraph = (el, graphCode, dataset, index) => {
-  //   if (!el || !graphCode) return;
-
-  //   if (!Array.isArray(dataset)) {
-  //     return;
-  //   }
-
-  //   el.innerHTML = `<canvas id="graph-canvas-${index}" style="width: 100%; height: 100%;"></canvas>`;
-
-  //   const script = document.createElement('script');
-  //   script.type = 'text/javascript';
-  //   script.text = `
-  //     (function() {
-  //       const ctx = document.getElementById('graph-canvas-${index}').getContext('2d');
-  //       const dataset = ${JSON.stringify(dataset)};
-  //       ${graphCode}
-  //     })();
-  //   `;
-  //   el.appendChild(script);
-  // };
 
 
   const renderGraph = (el, graphCode, dataset, index) => {
@@ -243,7 +223,7 @@ const ChatPage = () => {
               setLoading={setLoading}
             />
           ) : (
-            <div className="chat-container p-4 rounded-lg h-[60vh] w-[100%] max-[768px]:w-[100%]  mx-auto mb-4">
+            <div className="chat-container p-4 rounded-lg h-[80vh] w-[90%] max-[768px]:w-[100%]  mx-auto mb-4">
               {[...datasetInfoMessages, ...getMessagesForSession(getCurrentSessionId(selectedDataset))].map((message, index) => (
                 <div key={index} className={`message ${message.sender === 'user' ? 'text-right' : 'text-left'} mb-10 relative w-[800px] max-[1100px]:w-[700px] max-[1024px]:w-[600px] max-[950px]:w-[500px] max-[840px]:w-[400px] max-[550px]:w-[300px] max-[460px]:w-[250px] max-[405px]:w-[235px]  max-[390px]:w-[210px] max-[365px]:w-[200px] max-[352px]:w-[180px] mx-auto`}>
                   <div
@@ -266,7 +246,7 @@ const ChatPage = () => {
                       </div>
                     )}
                     {message.sender === 'user' ? (
-                      <img src={logo} alt="ICED Logo" className="absolute bottom-[18px] right-[-10px] w-[28.5px] h-[28.5px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover rounded-full" />
+                      <img src={logo} alt="ICED Logo" className="absolute bottom-[18px] right-[-10px] w-[35px] h-[35px] max-[780px]:w-[20px] max-[780px]:h-[20px] object-cover rounded-full" />
                     ) : (
                       <img src={bmlogo} alt="Logo" className="w-[80px] h-[80px] object-cover absolute top-[-5.45rem] left-[-30px]" />
                     )}
